@@ -1,0 +1,57 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.4.5'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.example.mockbean'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+bootRun {
+    mainClass = 'com.example.mockbean.DemoMockBeanIntegrationTest.SubProjectA'
+}
+
+bootJar {
+    mainClass = 'com.example.mockbean.DemoMockBeanIntegrationTest.SubProjectA'
+}
+
+// This to set the directory structure for the source sets such as main and test for gradle to identify correctly.
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/src/main/java']
+        }
+        resources {
+            srcDirs = ['src/src/main/resources']
+        }
+    }
+    test {
+        java {
+            srcDirs = ['src/src/test/java']
+        }
+        resources {
+            srcDirs = ['src/src/test/resources']
+        }
+    }
+} 
