@@ -22,6 +22,14 @@ dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    /*
+    implementation project(':')
+    This establishes a dependency from SubProjectA to the root project. Now, the classes and resources in the main source set of your root project should be accessible within SubProjectA, allowing your integration test classes (like AIntegrationTest) to use the root project's main code.
+    You should now be able to reference classes from the root project in your integration tests within SubProjectA.
+    project(':') means, this subproject depends on the root project
+    For more info check: /doc/README.md
+     **/
+    implementation project(':')
 }
 
 tasks.named('test') {

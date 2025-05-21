@@ -12,7 +12,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
+// This specifically required because of implementation project(':') line subproject build.gradle, since now this test will find two @SpringBootConfiguration class.
+@SpringBootTest(classes = com.example.mockbean.DemoMockBeanIntegrationTest.DemoMockBeanIntegrationTestApplication.class)
 @Import(TestConfig.class)
 @ActiveProfiles("dev-sql")
 class AIntegrationTest {
