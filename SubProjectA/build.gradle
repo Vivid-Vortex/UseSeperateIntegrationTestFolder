@@ -17,6 +17,34 @@ repositories {
     mavenCentral()
 }
 
+// This to set the directory structure for the source sets such as main and test for gradle to identify correctly.
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java']
+        }
+        resources {
+            srcDirs = ['src/main/resources']
+        }
+    }
+    test {
+        java {
+            srcDirs = ['src/test/java']
+        }
+        resources {
+            srcDirs = ['src/test/resources']
+        }
+    }
+    integrationTest {
+        java {
+            srcDirs = ['src/integrationTest/java']
+        }
+        resources {
+            srcDirs = ['src/integrationTest/resources', 'src/main/resources', 'src/test/resources'] // second and thried argument mens to let access resources fodler under main and test for integrationTest classes
+        }
+    }
+}
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -30,6 +58,24 @@ dependencies {
     For more info check: /doc/README.md
      **/
     implementation project(':')
+
+    // Dependencies for integration tests
+    /**
+     * If these lines were uncommented and active, this block would suggest a project setup where:
+     *
+     * Integration tests are clearly separated: They reside in their own integrationTest source set.
+     * Multi-module architecture: The current project is part of a larger multi-project build and needs to test against another subproject (SubProjectA).
+     * Spring Boot Testing: The integration tests heavily rely on Spring Boot's testing capabilities.
+     * Mockito for Mocking: Mocking is used in these integration tests.
+     * JUnit 5 as Test Framework: JUnit 5 is the chosen test framework, and its platform launcher is included for proper test execution.
+     */
+    // integrationTestImplementation project(path: ':SubProjectA', configuration: 'main')
+    integrationTestImplementation 'org.springframework.boot:spring-boot-starter-test'
+//    integrationTestImplementation 'org.mockito:mockito-core'
+//    integrationTestImplementation 'org.mockito:mockito-junit-jupiter'
+//    integrationTestRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    // Add other test dependencies here if needed for integration tests that are NOT in main or test
+    integrationTestImplementation sourceSets.main.output // This is a direct way to ensure the compiled classes from main are on the classpath for integrationTest.
 }
 
 tasks.named('test') {
@@ -44,22 +90,27 @@ bootJar {
     mainClass = 'com.example.mockbean.DemoMockBeanIntegrationTest.SubProjectA'
 }
 
-// This to set the directory structure for the source sets such as main and test for gradle to identify correctly.
-sourceSets {
-    main {
-        java {
-            srcDirs = ['src/src/main/java']
-        }
-        resources {
-            srcDirs = ['src/src/main/resources']
-        }
-    }
-    test {
-        java {
-            srcDirs = ['src/src/test/java']
-        }
-        resources {
-            srcDirs = ['src/src/test/resources']
-        }
-    }
+//This is to ensure your integrationTest source set inherits all the dependencies from your main source set. You do this by making the integrationTestImplementation configuration extend implementation, and integrationTestRuntimeOnly extend runtimeOnly
+// Essential inherit dependencies from main
+configurations {
+    integrationTestImplementation.extendsFrom(implementation)
+    integrationTestRuntimeOnly.extendsFrom(runtimeOnly)
+}
+
+
+tasks.register('integrationTest', Test) {
+    description = 'Runs the integration tests.'
+    group = 'verification'
+
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+
+    shouldRunAfter test
+
+    useJUnitPlatform()
+}
+
+// Ensure integration tests are run as part of the 'check' task
+check {
+    dependsOn integrationTest
 } 
