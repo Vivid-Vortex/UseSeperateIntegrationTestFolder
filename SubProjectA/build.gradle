@@ -92,9 +92,17 @@ bootJar {
 
 //This is to ensure your integrationTest source set inherits all the dependencies from your main source set. You do this by making the integrationTestImplementation configuration extend implementation, and integrationTestRuntimeOnly extend runtimeOnly
 // Essential inherit dependencies from main
+//configurations {
+//    integrationTestImplementation.extendsFrom(implementation)
+//    integrationTestRuntimeOnly.extendsFrom(runtimeOnly)
+//}
 configurations {
-    integrationTestImplementation.extendsFrom(implementation)
-    integrationTestRuntimeOnly.extendsFrom(runtimeOnly)
+    integrationTestCompile.extendsFrom testCompile
+    integrationTestImplementation.extendsFrom testImplementation
+    integrationTestAnnotationProcessor.extendsFrom testAnnotationProcessor
+    integrationTestRuntime.extendsFrom testRuntime
+    integrationTestRuntimeOnly.extendsFrom runtimeOnly
+    integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
 }
 
 
